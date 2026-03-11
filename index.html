@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Kelly Global Pro | Login</title>
+    <style>
+        :root { --brand: #004a99; --safe: #27ae60; --warn: #f39c12; --floor: #d35400; --danger: #c0392b; }
+        body { font-family: -apple-system, system-ui, sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        
+        /* 登入畫面樣式 */
+        #login-screen {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--brand); display: flex; flex-direction: column;
+            justify-content: center; align-items: center; z-index: 9999; color: white;
+        }
+        .login-box { background: white; padding: 30px; border-radius: 20px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-box h3 { color: var(--brand); margin-bottom: 20px; }
+        .login-box input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1.2rem; text-align: center; box-sizing: border-box; margin-bottom: 15px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--brand); color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; }
+
+        /* 主程式內容 (預設隱藏) */
+        #main-app { display: none; padding: 15px; }
+        .app-container { max-width: 450px; margin: auto; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        
+        h2 { text-align: center; color: var(--brand); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
+        label { display: block; margin: 12px 0 6px; font-weight: bold; font-size: 0.85rem; color: #555; }
+        select, input { width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
+        
+        .price-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
+        .price-box { background: #f9f9f9; padding: 10px 5px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
+        .p-label { font-size: 0.65rem; color: #888; display: block; margin-bottom: 4px; }
+        .p-val { font-weight: bold; font-size: 0.9rem; }
+        .cost-secret { color: transparent; cursor: pointer; transition: 0.2s; }
+        .cost-secret.show { color: var(--danger); }
+
+        .result-card { background: var(--brand); color: white; border-radius: 12px; padding: 15px; margin-top: 20px; }
+        .res-row { display: flex; justify-content: space-between; margin: 8px 0; }
+        .res-val { font-weight: bold; font-size: 1.1rem; }
+        
+        .status-bar { text-align: center; padding: 8px; border-radius: 8px; margin-top: 15px; font-weight: bold; color: white; display: none; }
+        .footer { text-align: center; font-size: 0.6rem; color: #bbb; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
+    </style>
+</head>
+<body>
+
+<div id="login-screen">
+    <div class="login-box">
+        <h3>Kelly Chemical</h3>
+        <p style="color:#666; font-size: 0.8rem;">Manager Access Only</p>
+        <input type="password" id="passInput" placeholder="輸入啟動密碼" pattern="[0-9]*" inputmode="numeric">
+        <button onclick="checkPass()">登入系統</button>
+        <p id="errMsg" style="color:red; font-size:0.8rem; margin-top:10px; display:none;">密碼錯誤，請重試</p>
+    </div>
+</div>
+
+<div id="main-app">
+    <div class="app-container">
+        <h2>Kelly 產品報價助手</h2>
+        
+        <label>產品線 Line</label>
+        <select id="line" onchange="updateProds()">
+            <option value="">-- 選擇產品線 --</option>
+            <option value="NAVEL">1. NAVEL (Pigment Chips)</option>
+            <option value="NEO">2. NEO (Inkjet)</option>
+            <option value="ORGALON">3. ORGALON (Dyes)</option>
+            <option value="NASOL_P">4. NASOL (P) 奈米色漿</option>
+            <option value="NASOL_M">5. NASOL (M) 微米色漿</option>
+            <option value="NASOL_U">6. NASOL (U) PU系列</option>
+            <option value="Kraft">7. Kraft (PET 添加劑)</option>
+        </select>
+
+        <label>型號 Product</label>
+        <select id="prod" onchange="initPrice()">
+            <option value="">-- 先選產品線 --</option>
+        </select>
+
+        <div class="price-panel">
+            <div class="price-box">
+                <span class="p-label">建議售價</span>
+                <span id="msrp" class="p-val">--</span>
+            </div>
+            <div class="price-box">
+                <span class="p-label">底價</span>
+                <span id="floor" class="p-val" style="color:var(--brand)">--</span>
+            </div>
+            <div class="price-box" onclick="toggleCost()">
+                <span class="p-label">成本 (隱藏)</span>
+                <span id="cost" class="p-val cost-secret">--</span>
+            </div>
+        </div>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+            <div>
+                <label>成交報價 (USD)</label>
+                <input type="number" id="qPrice" step="0.1" oninput="calc()">
+            </div>
+            <div>
+                <label>數量 (KG)</label>
+                <input type="number" id="qQty" oninput="calc()">
+            </div>
+        </div>
+
+        <div id="statusBar" class="status-bar"></div>
+
+        <div class="result-card">
+            <div class="res-row"><span>總成交額</span><span id="outSales" class="res-val">$0</span></div>
+            <div class="res-row"><span>總毛利額</span><span id="outProfit" class="res-val">$0</span></div>
+            <div class="res-row"><span>毛利率</span><span id="outMargin" class="res-val">0%</span></div>
+        </div>
+
+        <div class="footer">Confidential | Jay Li | Manager Access</div>
+    </div>
+</div>
+
+<script>
+    // --- 密碼設定 ---
+    const CORRECT_PASSWORD = "Kelly1965"; // 你可以在這裡修改你的登入密碼
+
+    function checkPass() {
+        const input = document.getElementById('passInput').value;
+        if (input === CORRECT_PASSWORD) {
+            document.getElementById('login-screen').style.display = 'none';
+            document.getElementById('main-app').style.display = 'block';
+        } else {
+            document.getElementById('errMsg').style.display = 'block';
+            document.getElementById('passInput').value = "";
+        }
+    }
+
+    // 各產品線對應的 MOQ 設定
+    const moqSettings = {
+        "NAVEL": 20, "NEO": 25, "ORGALON": 20,
+        "NASOL_P": 10, "NASOL_M": 10, "NASOL_U": 240, "Kraft": 500
+    };
+
+    const db = {
+        "NAVEL": [
+            ["NAVEL 1716", 42.9, 57.0, 61.0], ["NAVEL 1717", 36.5, 49.0, 52.0],
+            ["NAVEL 2620", 41.0, 55.0, 59.0], ["NAVEL 3788", 48.1, 64.0, 69.0],
+            ["NAVEL 3733", 69.3, 92.0, 99.0], ["NAVEL 3735", 68.0, 91.0, 97.0],
+            ["NAVEL 3741", 41.0, 55.0, 59.0], ["NAVEL 3810", 48.7, 65.0, 70.0],
+            ["NAVEL 1608", 28.3, 38.0, 40.0], ["NAVEL 1776", 46.2, 62.0, 66.0]
+        ],
+        "NEO": [
+            ["NEO CYAN 601", 8.41, 13.33, 14.20], ["NEO MAGENTA 301", 11.88, 20.00, 21.30],
+            ["NEO MAGENTA 302", 13.48, 21.74, 23.19], ["NEO YELLOW 101", 13.48, 21.74, 23.19],
+            ["NEO BLACK 801", 6.38, 12.90, 13.62], ["NEO ORANGE 201", 8.70, 16.52, 17.39],
+            ["NEO RED 311", 13.91, 22.32, 23.77], ["NEO GREEN 501", 18.26, 32.17, 34.06],
+            ["NEO VIOLET 401", 12.17, 22.61, 23.91]
+        ],
+        "ORGALON": [
+            ["ORGALON 102 NEW", 21.7, 27.3, 29.4], ["ORGALON 120", 10.9, 14.2, 15.4],
+            ["ORGALON 209", 15.9, 23.4, 25.2], ["ORGALON 210", 14.5, 20.8, 22.4],
+            ["ORGALON 820", 11.6, 15.7, 17.0], ["ORGALON 821", 12.3, 15.7, 17.0],
+            ["ORGALON 804", 11.9, 15.7, 16.9]
+        ],
+        "NASOL_P": [
+            ["BLACK 800P", 76.19, 92.00, 97.00], ["RED 302P", 53.97, 65.75, 69.81],
+            ["BLUE 603P", 45.40, 55.36, 58.93], ["VIOLET 701P", 44.44, 54.22, 57.63],
+            ["GREEN 501P", 30.16, 37.01, 39.45]
+        ],
+        "NASOL_M": [
+            ["YELLOW 101M", 28.41, 34.94, 37.14], ["RED 303M", 43.49, 53.08, 56.43],
+            ["BLACK 802M", 21.75, 26.95, 28.76], ["BLUE 601M", 20.00, 24.84, 26.62]
+        ],
+        "NASOL_U": [
+            ["BLACK 801PU", 28.25, 35.50, 36.95], ["BLUE 605PU", 28.41, 35.50, 40.39],
+            ["MAGENTA 311PU", 38.89, 48.50, 53.77], ["YELLOW 102PU", 40.79, 51.00, 56.20],
+            ["WHITE 902PU", 21.43, 26.70, 31.46]
+        ],
+        "Kraft": [
+            ["Kraft PET-MT-01", 14.30, 17.90, 19.10]
+        ]
+    };
+
+    function updateProds() {
+        const line = document.getElementById('line').value;
+        const pSel = document.getElementById('prod');
+        const qQty = document.getElementById('qQty');
+        pSel.innerHTML = '<option value="">-- 選擇型號 --</option>';
+        if(db[line]) {
+            qQty.value = moqSettings[line];
+            db[line].sort((a,b) => a[0].localeCompare(b[0])).forEach(p => {
+                let opt = document.createElement('option');
+                opt.value = `${p[1]},${p[2]},${p[3]}`;
+                opt.textContent = p[0];
+                pSel.appendChild(opt);
+            });
+        }
+    }
+
+    function initPrice() {
+        const val = document.getElementById('prod').value;
+        if(!val) return;
+        const [c, f, m] = val.split(',');
+        document.getElementById('cost').innerText = c;
+        document.getElementById('floor').innerText = f;
+        document.getElementById('msrp').innerText = m;
+        document.getElementById('qPrice').value = m;
+        calc();
+    }
+
+    function toggleCost() { document.getElementById('cost').classList.toggle('show'); }
+
+    function calc() {
+        const cost = parseFloat(document.getElementById('cost').innerText) || 0;
+        const floor = parseFloat(document.getElementById('floor').innerText) || 0;
+        const msrp = parseFloat(document.getElementById('msrp').innerText) || 0;
+        const price = parseFloat(document.getElementById('qPrice').value) || 0;
+        const qty = parseFloat(document.getElementById('qQty').value) || 0;
+        const sales = price * qty;
+        const profit = (price - cost) * qty;
+        const margin = price > 0 ? ((price - cost) / price * 100).toFixed(1) : 0;
+        document.getElementById('outSales').innerText = '$' + sales.toLocaleString();
+        document.getElementById('outProfit').innerText = '$' + profit.toLocaleString();
+        document.getElementById('outMargin').innerText = margin + '%';
+        const bar = document.getElementById('statusBar');
+        bar.style.display = 'block';
+        if (price < cost) { bar.innerText = "危險：低於成本！"; bar.style.background = 'var(--danger)'; }
+        else if (price < floor) { bar.innerText = "警告：低於底價 (需總經理授權)"; bar.style.background = 'var(--floor)'; }
+        else if (price < msrp) { bar.innerText = "注意：低於建議售價"; bar.style.background = 'var(--warn)'; }
+        else { bar.innerText = "狀態：利潤優渥"; bar.style.background = 'var(--safe)'; }
+    }
+</script>
+</body>
+</html>
