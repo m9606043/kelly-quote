@@ -3,30 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Kelly Global Pro | Login</title>
+    <title>Kelly Global Pro Assistant</title>
     <style>
         :root { --brand: #004a99; --safe: #27ae60; --warn: #f39c12; --floor: #d35400; --danger: #c0392b; }
-        body { font-family: -apple-system, system-ui, sans-serif; background: #f4f7f6; margin: 0; padding: 0; }
+        html, body { height: 100%; overflow-x: hidden; background: #f4f7f6; margin: 0; padding: 0; }
         
-        /* 登入畫面樣式 */
+        /* 登入畫面 */
         #login-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
             background: var(--brand); display: flex; flex-direction: column;
             justify-content: center; align-items: center; z-index: 9999; color: white;
         }
-        .login-box { background: white; padding: 30px; border-radius: 20px; width: 80%; max-width: 300px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .login-box { background: white; padding: 30px; border-radius: 20px; width: 85%; max-width: 320px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
         .login-box h3 { color: var(--brand); margin-bottom: 20px; }
-        .login-box input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1.2rem; text-align: center; box-sizing: border-box; margin-bottom: 15px; }
-        .login-box button { width: 100%; padding: 12px; background: var(--brand); color: white; border: none; border-radius: 10px; font-size: 1rem; cursor: pointer; }
+        .login-box input { width: 100%; padding: 15px; border: 1px solid #ddd; border-radius: 10px; font-size: 1.5rem; text-align: center; box-sizing: border-box; margin-bottom: 15px; letter-spacing: 5px; }
+        .login-box button { width: 100%; padding: 12px; background: var(--brand); color: white; border: none; border-radius: 10px; font-size: 1rem; font-weight: bold; }
 
-        /* 主程式內容 (預設隱藏) */
-        #main-app { display: none; padding: 15px; }
-        .app-container { max-width: 450px; margin: auto; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
+        /* 主程式 */
+        #main-app { display: none; padding: 15px; min-height: 100%; box-sizing: border-box; overflow-y: auto; }
+        .app-container { max-width: 450px; margin: 0 auto 30px; background: white; border-radius: 16px; padding: 20px; box-shadow: 0 8px 30px rgba(0,0,0,0.1); }
         
         h2 { text-align: center; color: var(--brand); margin-bottom: 20px; font-size: 1.3rem; border-bottom: 2px solid #eee; padding-bottom: 10px; margin-top: 0; }
         label { display: block; margin: 12px 0 6px; font-weight: bold; font-size: 0.85rem; color: #555; }
-        select, input { width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; }
-        
+        select, input { width: 100%; padding: 14px; border: 1.5px solid #ddd; border-radius: 10px; font-size: 1rem; box-sizing: border-box; background-color: #fff; }
+
         .price-panel { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin: 15px 0; }
         .price-box { background: #f9f9f9; padding: 10px 5px; border-radius: 8px; text-align: center; border: 1px solid #eee; }
         .p-label { font-size: 0.65rem; color: #888; display: block; margin-bottom: 4px; }
@@ -39,7 +39,7 @@
         .res-val { font-weight: bold; font-size: 1.1rem; }
         
         .status-bar { text-align: center; padding: 8px; border-radius: 8px; margin-top: 15px; font-weight: bold; color: white; display: none; }
-        .footer { text-align: center; font-size: 0.6rem; color: #bbb; margin-top: 20px; text-transform: uppercase; letter-spacing: 1px; }
+        .footer { text-align: center; font-size: 0.6rem; color: #bbb; margin-top: 25px; text-transform: uppercase; padding-bottom: 20px; }
     </style>
 </head>
 <body>
@@ -48,17 +48,17 @@
     <div class="login-box">
         <h3>Kelly Chemical</h3>
         <p style="color:#666; font-size: 0.8rem;">Manager Access Only</p>
-        <input type="password" id="passInput" placeholder="輸入啟動密碼" pattern="[0-9]*" inputmode="numeric">
-        <button onclick="checkPass()">登入系統</button>
-        <p id="errMsg" style="color:red; font-size:0.8rem; margin-top:10px; display:none;">密碼錯誤，請重試</p>
+        <input type="password" id="passInput" placeholder="PIN碼" pattern="[0-9]*" inputmode="numeric">
+        <button onclick="checkPass()">啟動系統</button>
+        <p id="errMsg" style="color:red; font-size:0.8rem; margin-top:10px; display:none;">密碼錯誤</p>
     </div>
 </div>
 
 <div id="main-app">
     <div class="app-container">
-        <h2>Kelly 產品報價助手</h2>
+        <h2>Kelly 報價助理</h2>
         
-        <label>產品線 Line</label>
+        <label>1. 產品線 Line</label>
         <select id="line" onchange="updateProds()">
             <option value="">-- 選擇產品線 --</option>
             <option value="NAVEL">1. NAVEL (Pigment Chips)</option>
@@ -70,7 +70,7 @@
             <option value="Kraft">7. Kraft (PET 添加劑)</option>
         </select>
 
-        <label>型號 Product</label>
+        <label>2. 品項 (格式: [C.I. No.] 名稱)</label>
         <select id="prod" onchange="initPrice()">
             <option value="">-- 先選產品線 --</option>
         </select>
@@ -85,7 +85,7 @@
                 <span id="floor" class="p-val" style="color:var(--brand)">--</span>
             </div>
             <div class="price-box" onclick="toggleCost()">
-                <span class="p-label">成本 (隱藏)</span>
+                <span class="p-label">成本 (點擊)</span>
                 <span id="cost" class="p-val cost-secret">--</span>
             </div>
         </div>
@@ -93,7 +93,7 @@
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
             <div>
                 <label>成交報價 (USD)</label>
-                <input type="number" id="qPrice" step="0.1" oninput="calc()">
+                <input type="number" id="qPrice" step="0.01" oninput="calc()">
             </div>
             <div>
                 <label>數量 (KG)</label>
@@ -105,8 +105,8 @@
 
         <div class="result-card">
             <div class="res-row"><span>總成交額</span><span id="outSales" class="res-val">$0</span></div>
-            <div class="res-row"><span>總毛利額</span><span id="outProfit" class="res-val">$0</span></div>
-            <div class="res-row"><span>毛利率</span><span id="outMargin" class="res-val">0%</span></div>
+            <div class="res-row"><span>預估毛利額</span><span id="outProfit" class="res-val">$0</span></div>
+            <div class="res-row"><span>毛利率 (%)</span><span id="outMargin" class="res-val">0%</span></div>
         </div>
 
         <div class="footer">Confidential | Jay Li | Manager Access</div>
@@ -114,12 +114,10 @@
 </div>
 
 <script>
-    // --- 密碼設定 ---
-    const CORRECT_PASSWORD = "Kelly1965"; // 你可以在這裡修改你的登入密碼
+    const CORRECT_PASSWORD = "19651965";
 
     function checkPass() {
-        const input = document.getElementById('passInput').value;
-        if (input === CORRECT_PASSWORD) {
+        if (document.getElementById('passInput').value === CORRECT_PASSWORD) {
             document.getElementById('login-screen').style.display = 'none';
             document.getElementById('main-app').style.display = 'block';
         } else {
@@ -128,63 +126,75 @@
         }
     }
 
-    // 各產品線對應的 MOQ 設定
-    const moqSettings = {
-        "NAVEL": 20, "NEO": 25, "ORGALON": 20,
-        "NASOL_P": 10, "NASOL_M": 10, "NASOL_U": 240, "Kraft": 500
-    };
+    const moqSettings = { "NAVEL": 20, "NEO": 25, "ORGALON": 20, "NASOL_P": 10, "NASOL_M": 10, "NASOL_U": 240, "Kraft": 500 };
 
     const db = {
         "NAVEL": [
-            ["NAVEL 1716", 42.9, 57.0, 61.0], ["NAVEL 1717", 36.5, 49.0, 52.0],
-            ["NAVEL 2620", 41.0, 55.0, 59.0], ["NAVEL 3788", 48.1, 64.0, 69.0],
-            ["NAVEL 3733", 69.3, 92.0, 99.0], ["NAVEL 3735", 68.0, 91.0, 97.0],
-            ["NAVEL 3741", 41.0, 55.0, 59.0], ["NAVEL 3810", 48.7, 65.0, 70.0],
-            ["NAVEL 1608", 28.3, 38.0, 40.0], ["NAVEL 1776", 46.2, 62.0, 66.0]
+            ["NAVEL 1716", 42.9, 57.0, 61.0, "PY-150"], ["NAVEL 1717", 36.5, 49.0, 52.0, "PY-151"],
+            ["NAVEL 2620", 41.0, 55.0, 59.0, "PO-64"], ["NAVEL 3788", 48.1, 64.0, 69.0, "PR-122"],
+            ["NAVEL 3733", 69.3, 92.0, 99.0, "PR-177"], ["NAVEL 3735", 68.0, 91.0, 97.0, "PR-179"],
+            ["NAVEL 3741", 41.0, 55.0, 59.0, "PR-185"], ["NAVEL 3810", 48.7, 65.0, 70.0, "PR-254"],
+            ["NAVEL 3820_3", 55.2, 74.0, 79.0, "PR-264"], ["NAVEL 4675", 54.2, 72.0, 78.0, "PV-19"],
+            ["NAVEL 4689", 46.2, 62.0, 66.0, "PV-23"], ["NAVEL 5663", 25.7, 34.0, 37.0, "PG-7"],
+            ["NAVEL 6719", 28.8, 38.0, 41.0, "PB-15:3"], ["NAVEL 6626", 115.4, 153.0, 165.0, "PB-60"],
+            ["NAVEL 8663", 21.7, 28.0, 29.0, "PBk-7"], ["NAVEL 8663S", 36.5, 52.0, 56.0, "PBk-7*"],
+            ["NAVEL 8663K", 27.0, 36.0, 40.0, "PBk-7*"], ["NAVEL 9662", 12.2, 16.0, 17.0, "PW-6"],
+            ["NAVEL 1608", 28.3, 38.0, 40.0, "PY-42"], ["NAVEL 1776", 46.2, 62.0, 66.0, "PY-110"]
         ],
         "NEO": [
-            ["NEO CYAN 601", 8.41, 13.33, 14.20], ["NEO MAGENTA 301", 11.88, 20.00, 21.30],
-            ["NEO MAGENTA 302", 13.48, 21.74, 23.19], ["NEO YELLOW 101", 13.48, 21.74, 23.19],
-            ["NEO BLACK 801", 6.38, 12.90, 13.62], ["NEO ORANGE 201", 8.70, 16.52, 17.39],
-            ["NEO RED 311", 13.91, 22.32, 23.77], ["NEO GREEN 501", 18.26, 32.17, 34.06],
-            ["NEO VIOLET 401", 12.17, 22.61, 23.91]
+            ["CYAN 601", 8.41, 13.33, 14.20, "PB-15:3"], ["MAGENTA 301", 11.88, 20.00, 21.30, "PR-122"],
+            ["MAGENTA 302", 13.48, 21.74, 23.19, "PV-19"], ["YELLOW 101", 13.48, 21.74, 23.19, "PY-155"],
+            ["BLACK 801", 6.38, 12.90, 13.62, "PBk-7"], ["ORANGE 201", 8.70, 16.52, 17.39, "PO-34"],
+            ["RED 311", 13.91, 22.32, 23.77, "PR-254"], ["GREEN 501", 18.26, 32.17, 34.06, "PG-36"],
+            ["VIOLET 401", 12.17, 22.61, 23.91, "PV-23"]
         ],
         "ORGALON": [
-            ["ORGALON 102 NEW", 21.7, 27.3, 29.4], ["ORGALON 120", 10.9, 14.2, 15.4],
-            ["ORGALON 209", 15.9, 23.4, 25.2], ["ORGALON 210", 14.5, 20.8, 22.4],
-            ["ORGALON 820", 11.6, 15.7, 17.0], ["ORGALON 821", 12.3, 15.7, 17.0],
-            ["ORGALON 804", 11.9, 15.7, 16.9]
-        ],
-        "NASOL_P": [
-            ["BLACK 800P", 76.19, 92.00, 97.00], ["RED 302P", 53.97, 65.75, 69.81],
-            ["BLUE 603P", 45.40, 55.36, 58.93], ["VIOLET 701P", 44.44, 54.22, 57.63],
-            ["GREEN 501P", 30.16, 37.01, 39.45]
+            ["ORGALON 102 NEW", 21.7, 27.3, 29.4, "SY-79"], ["ORGALON 120", 10.9, 14.2, 15.4, "SY-82"],
+            ["ORGALON 147", 0, 0, 0, "SY-146"], ["ORGALON 209", 15.9, 23.4, 25.2, "SO-62"],
+            ["ORGALON 210", 14.5, 20.8, 22.4, "SO-54"], ["ORGALON 324", 14.2, 17.1, 18.4, "SR-8"],
+            ["PLASOL RED 32", 0, 30.8, 33.2, "SR-49"], ["ORGALON 329", 15.9, 20.8, 22.4, "SR-119"],
+            ["ORGALON 328", 13.3, 16.7, 18.0, "SR-122"], ["ORGALON 306", 13.0, 18.1, 19.6, "SR-122"],
+            ["ORGALON 327", 0, 54.2, 58.4, "SR-127"], ["ORGALON 310", 54.3, 64.5, 69.5, "SR-218"],
+            ["ORGALON 402", 17.4, 20.8, 22.4, "SBr-MX"], ["ORGALON 405", 14.5, 20.8, 22.4, "SBr-MX"],
+            ["ORGALON 520", 13.8, 20.8, 22.4, "SG-MX"], ["ORGALON 606", 13.8, 20.8, 22.4, "SB-70"],
+            ["ORGALON 623", 17.4, 20.8, 22.4, "SB-5"], ["ORGALON 636", 58.0, 70.6, 75.8, "SB-136"],
+            ["ORGALON 645", 0, 70.6, 75.8, "SB-45"], ["ORGALON 667", 27.5, 33.8, 36.3, "SB-67"],
+            ["ORGALON 820", 11.6, 15.7, 17.0, "SBk-27"], ["ORGALON 821", 12.3, 15.7, 17.0, "SBk-27"],
+            ["ORGALON 804", 11.9, 15.7, 16.9, "SBk-34"]
         ],
         "NASOL_M": [
-            ["YELLOW 101M", 28.41, 34.94, 37.14], ["RED 303M", 43.49, 53.08, 56.43],
-            ["BLACK 802M", 21.75, 26.95, 28.76], ["BLUE 601M", 20.00, 24.84, 26.62]
+            ["YELLOW 101M", 28.4, 34.9, 37.1, "PY-139(S)"], ["YELLOW 102M", 31.7, 38.0, 42.0, "PY-150(S)"],
+            ["PINK 311M", 30.0, 36.0, 40.0, "PR-122(S)"], ["RED 303M", 43.5, 53.1, 56.4, "PR-179(S)"],
+            ["RED 304M", 30.2, 37.3, 39.6, "PR-185(S)"], ["BLUE 601M", 20.0, 24.8, 26.6, "PB-15:3(S)"],
+            ["BLACK 802M", 21.7, 26.9, 28.8, "PBk-7(S)"]
+        ],
+        "NASOL_P": [
+            ["YELLOW 101P", 34.8, 42.5, 45.3, "PY-139(S)"], ["YELLOW 102P", 36.0, 44.2, 46.9, "PY-150(S)"],
+            ["PINK 312P", 39.1, 47.7, 50.8, "PR-122(S)"], ["RED 302P", 54.0, 65.8, 69.8, "PR-177(S)"],
+            ["RED 303PL", 61.9, 69.4, 73.0, "PR-179(S)"], ["RED 306P", 58.4, 71.1, 75.5, "PR-X(S)"],
+            ["GREEN 501P", 30.2, 37.0, 39.5, "PG-7(S)"], ["BLUE 601P", 27.5, 33.8, 36.0, "PB-15:3(S)"],
+            ["BLUE 603P", 45.4, 55.4, 58.9, "PB-60(S)"], ["VIOLET 701P", 44.4, 54.2, 57.6, "PV-23(S)"],
+            ["BLACK 800P", 76.2, 92.0, 97.0, "PBk-7(S)"], ["BLACK 801P", 30.5, 33.6, 35.7, "PBk-7(S)"],
+            ["BLACK 809P", 36.5, 51.6, 54.8, "PBk-7(S)"]
         ],
         "NASOL_U": [
-            ["BLACK 801PU", 28.25, 35.50, 36.95], ["BLUE 605PU", 28.41, 35.50, 40.39],
-            ["MAGENTA 311PU", 38.89, 48.50, 53.77], ["YELLOW 102PU", 40.79, 51.00, 56.20],
-            ["WHITE 902PU", 21.43, 26.70, 31.46]
+            ["BLACK 801PU", 28.3, 35.5, 37.0, "PBk-7(S)"], ["BLUE 605PU", 28.4, 35.5, 40.4, "PB-15:3(S)"],
+            ["MAGENTA 311PU", 38.9, 48.5, 53.8, "PR-122(S)"], ["YELLOW 102PU", 40.8, 51.0, 56.2, "PY-150(S)"],
+            ["WHITE 902PU", 21.4, 26.7, 31.5, "PW-6(S)"]
         ],
-        "Kraft": [
-            ["Kraft PET-MT-01", 14.30, 17.90, 19.10]
-        ]
+        "Kraft": [ ["PET-MT-01", 14.3, 17.9, 19.1, "Kraft"] ]
     };
 
     function updateProds() {
         const line = document.getElementById('line').value;
         const pSel = document.getElementById('prod');
-        const qQty = document.getElementById('qQty');
         pSel.innerHTML = '<option value="">-- 選擇型號 --</option>';
         if(db[line]) {
-            qQty.value = moqSettings[line];
-            db[line].sort((a,b) => a[0].localeCompare(b[0])).forEach(p => {
+            document.getElementById('qQty').value = moqSettings[line];
+            db[line].sort((a,b) => a[4].localeCompare(b[4])).forEach(p => {
                 let opt = document.createElement('option');
                 opt.value = `${p[1]},${p[2]},${p[3]}`;
-                opt.textContent = p[0];
+                opt.textContent = `[${p[4]}] ${p[0]}`;
                 pSel.appendChild(opt);
             });
         }
@@ -205,21 +215,19 @@
 
     function calc() {
         const cost = parseFloat(document.getElementById('cost').innerText) || 0;
-        const floor = parseFloat(document.getElementById('floor').innerText) || 0;
-        const msrp = parseFloat(document.getElementById('msrp').innerText) || 0;
         const price = parseFloat(document.getElementById('qPrice').value) || 0;
         const qty = parseFloat(document.getElementById('qQty').value) || 0;
         const sales = price * qty;
         const profit = (price - cost) * qty;
         const margin = price > 0 ? ((price - cost) / price * 100).toFixed(1) : 0;
         document.getElementById('outSales').innerText = '$' + sales.toLocaleString();
-        document.getElementById('outProfit').innerText = '$' + profit.toLocaleString();
-        document.getElementById('outMargin').innerText = margin + '%';
+        document.getElementById('outProfit').innerText = (cost === 0) ? "需核算" : '$' + profit.toLocaleString();
+        document.getElementById('outMargin').innerText = (cost === 0) ? "--" : margin + '%';
         const bar = document.getElementById('statusBar');
         bar.style.display = 'block';
-        if (price < cost) { bar.innerText = "危險：低於成本！"; bar.style.background = 'var(--danger)'; }
-        else if (price < floor) { bar.innerText = "警告：低於底價 (需總經理授權)"; bar.style.background = 'var(--floor)'; }
-        else if (price < msrp) { bar.innerText = "注意：低於建議售價"; bar.style.background = 'var(--warn)'; }
+        if (cost === 0) { bar.innerText = "無成本資料"; bar.style.background = '#7f8c8d'; }
+        else if (price < cost) { bar.innerText = "危險：低於成本！"; bar.style.background = 'var(--danger)'; }
+        else if (price < parseFloat(document.getElementById('floor').innerText)) { bar.innerText = "警告：低於底價"; bar.style.background = 'var(--floor)'; }
         else { bar.innerText = "狀態：利潤優渥"; bar.style.background = 'var(--safe)'; }
     }
 </script>
